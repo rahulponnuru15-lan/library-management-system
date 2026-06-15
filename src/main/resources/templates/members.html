@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Members | Library</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<header class="site-header">
+    <a class="brand" th:href="@{/}">Library Desk</a>
+    <nav>
+        <a th:href="@{/}">Dashboard</a>
+        <a th:href="@{/books}">Books</a>
+        <a class="active" th:href="@{/members}">Members</a>
+        <a th:href="@{/loans}">Loans</a>
+    </nav>
+</header>
+
+<main class="container two-column">
+    <section class="panel">
+        <p class="eyebrow">Community</p>
+        <h1>Members</h1>
+        <p class="muted">Registered members can borrow books from the catalogue.</p>
+
+        <div class="notice success" th:if="${success}" th:text="${success}"></div>
+        <div class="empty-state" th:if="${#lists.isEmpty(members)}">No members have been registered.</div>
+
+        <div class="table-wrap" th:unless="${#lists.isEmpty(members)}">
+            <table>
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="item : ${members}">
+                    <td th:text="${item.name}">Name</td>
+                    <td th:text="${item.email}">email@example.com</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <aside class="panel form-panel">
+        <p class="eyebrow">New record</p>
+        <h2>Register a member</h2>
+        <form th:action="@{/members}" th:object="${member}" method="post">
+            <label for="name">Full name</label>
+            <input id="name" type="text" th:field="*{name}">
+            <small class="field-error" th:errors="*{name}"></small>
+
+            <label for="email">Email</label>
+            <input id="email" type="email" th:field="*{email}">
+            <small class="field-error" th:errors="*{email}"></small>
+
+            <button class="button" type="submit">Register member</button>
+        </form>
+    </aside>
+</main>
+</body>
+</html>

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Loans | Library</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<header class="site-header">
+    <a class="brand" th:href="@{/}">Library Desk</a>
+    <nav>
+        <a th:href="@{/}">Dashboard</a>
+        <a th:href="@{/books}">Books</a>
+        <a th:href="@{/members}">Members</a>
+        <a class="active" th:href="@{/loans}">Loans</a>
+    </nav>
+</header>
+
+<main class="container">
+    <section class="panel form-panel horizontal-form">
+        <div>
+            <p class="eyebrow">Circulation</p>
+            <h1>Issue a book</h1>
+            <p class="muted">The due date is automatically set to 14 days from today.</p>
+        </div>
+
+        <div class="notice success" th:if="${success}" th:text="${success}"></div>
+        <div class="notice error" th:if="${error}" th:text="${error}"></div>
+
+        <form th:action="@{/loans}" th:object="${loanRequest}" method="post">
+            <div>
+                <label for="bookId">Available book</label>
+                <select id="bookId" th:field="*{bookId}">
+                    <option value="">Choose a book</option>
+                    <option th:each="book : ${books}"
+                            th:if="${book.availableCopies > 0}"
+                            th:value="${book.id}"
+                            th:text="|${book.title} (${book.availableCopies} available)|"></option>
+                </select>
+                <small class="field-error" th:errors="*{bookId}"></small>
+            </div>
+
+            <div>
+                <label for="memberId">Member</label>
+                <select id="memberId" th:field="*{memberId}">
+                    <option value="">Choose a member</option>
+                    <option th:each="member : ${members}"
+                            th:value="${member.id}"
+                            th:text="${member.name}"></option>
+                </select>
+                <small class="field-error" th:errors="*{memberId}"></small>
+            </div>
+
+            <button class="button" type="submit">Issue book</button>
+        </form>
+    </section>
+
+    <section class="panel">
+        <div class="section-heading">
+            <div>
+                <p class="eyebrow">All transactions</p>
+                <h2>Loan history</h2>
+            </div>
+        </div>
+
+        <div class="empty-state" th:if="${#lists.isEmpty(loans)}">No loans have been recorded.</div>
+
+        <div class="table-wrap" th:unless="${#lists.isEmpty(loans)}">
+            <table>
+                <thead>
+                <tr>
+                    <th>Book</th>
+                    <th>Member</th>
+                    <th>Borrowed</th>
+                    <th>Due</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="loan : ${loans}">
+                    <td th:text="${loan.book.title}">Book</td>
+                    <td th:text="${loan.member.name}">Member</td>
+                    <td th:text="${loan.borrowedOn}">2026-06-15</td>
+                    <td th:text="${loan.dueOn}">2026-06-29</td>
+                    <td>
+                        <span class="status"
+                              th:classappend="${loan.status.name() == 'RETURNED'} ? ' returned' : (${loan.overdue} ? ' overdue' : '')"
+                              th:text="${loan.status}">BORROWED</span>
+                    </td>
+                    <td>
+                        <form th:if="${loan.status.name() == 'BORROWED'}"
+                              th:action="@{/loans/{id}/return(id=${loan.id})}"
+                              method="post">
+                            <button class="button secondary small" type="submit">Return</button>
+                        </form>
+                        <span class="muted" th:if="${loan.status.name() == 'RETURNED'}"
+                              th:text="|Returned ${loan.returnedOn}|"></span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+</body>
+</html>

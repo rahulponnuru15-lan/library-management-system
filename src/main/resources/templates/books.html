@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Books | Library</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<header class="site-header">
+    <a class="brand" th:href="@{/}">Library Desk</a>
+    <nav>
+        <a th:href="@{/}">Dashboard</a>
+        <a class="active" th:href="@{/books}">Books</a>
+        <a th:href="@{/members}">Members</a>
+        <a th:href="@{/loans}">Loans</a>
+    </nav>
+</header>
+
+<main class="container two-column">
+    <section class="panel">
+        <p class="eyebrow">Catalogue</p>
+        <h1>Books</h1>
+        <p class="muted">Each row shows how many copies are currently ready to borrow.</p>
+
+        <div class="notice success" th:if="${success}" th:text="${success}"></div>
+        <div class="empty-state" th:if="${#lists.isEmpty(books)}">No books have been added.</div>
+
+        <div class="table-wrap" th:unless="${#lists.isEmpty(books)}">
+            <table>
+                <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>ISBN</th>
+                    <th>Available</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="item : ${books}">
+                    <td th:text="${item.title}">Title</td>
+                    <td th:text="${item.author}">Author</td>
+                    <td th:text="${item.isbn}">ISBN</td>
+                    <td th:text="|${item.availableCopies} / ${item.totalCopies}|">1 / 1</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <aside class="panel form-panel">
+        <p class="eyebrow">New record</p>
+        <h2>Add a book</h2>
+        <form th:action="@{/books}" th:object="${book}" method="post">
+            <label for="title">Title</label>
+            <input id="title" type="text" th:field="*{title}">
+            <small class="field-error" th:errors="*{title}"></small>
+
+            <label for="author">Author</label>
+            <input id="author" type="text" th:field="*{author}">
+            <small class="field-error" th:errors="*{author}"></small>
+
+            <label for="isbn">ISBN</label>
+            <input id="isbn" type="text" th:field="*{isbn}">
+            <small class="field-error" th:errors="*{isbn}"></small>
+
+            <label for="totalCopies">Number of copies</label>
+            <input id="totalCopies" type="number" min="1" th:field="*{totalCopies}">
+            <small class="field-error" th:errors="*{totalCopies}"></small>
+
+            <button class="button" type="submit">Add book</button>
+        </form>
+    </aside>
+</main>
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Dashboard | Library</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<header class="site-header">
+    <a class="brand" th:href="@{/}">Library Desk</a>
+    <nav>
+        <a class="active" th:href="@{/}">Dashboard</a>
+        <a th:href="@{/books}">Books</a>
+        <a th:href="@{/members}">Members</a>
+        <a th:href="@{/loans}">Loans</a>
+    </nav>
+</header>
+
+<main class="container">
+    <section class="hero">
+        <p class="eyebrow">Library management system</p>
+        <h1>Keep every book and borrower organized.</h1>
+        <p>Manage the catalogue, register members, and track every loan from one simple dashboard.</p>
+        <a class="button" th:href="@{/loans}">Issue a book</a>
+    </section>
+
+    <section class="stats">
+        <article class="stat-card">
+            <span>Book titles</span>
+            <strong th:text="${bookCount}">0</strong>
+        </article>
+        <article class="stat-card">
+            <span>Members</span>
+            <strong th:text="${memberCount}">0</strong>
+        </article>
+        <article class="stat-card">
+            <span>Active loans</span>
+            <strong th:text="${activeLoanCount}">0</strong>
+        </article>
+    </section>
+
+    <section class="panel">
+        <div class="section-heading">
+            <div>
+                <p class="eyebrow">Recent activity</p>
+                <h2>Loan history</h2>
+            </div>
+            <a class="text-link" th:href="@{/loans}">Manage loans</a>
+        </div>
+
+        <div class="empty-state" th:if="${#lists.isEmpty(loans)}">
+            No loans yet. Issue the first book to a member.
+        </div>
+
+        <div class="table-wrap" th:unless="${#lists.isEmpty(loans)}">
+            <table>
+                <thead>
+                <tr>
+                    <th>Book</th>
+                    <th>Member</th>
+                    <th>Borrowed</th>
+                    <th>Due</th>
+                    <th>Status</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="loan : ${loans}">
+                    <td th:text="${loan.book.title}">Book title</td>
+                    <td th:text="${loan.member.name}">Member</td>
+                    <td th:text="${loan.borrowedOn}">2026-06-15</td>
+                    <td th:text="${loan.dueOn}">2026-06-29</td>
+                    <td>
+                        <span class="status"
+                              th:classappend="${loan.status.name() == 'RETURNED'} ? ' returned' : (${loan.overdue} ? ' overdue' : '')"
+                              th:text="${loan.status}">BORROWED</span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+</body>
+</html>
